@@ -1,13 +1,15 @@
 <div class="container">
     <h3>{{title}}</h3>
-
+    <button class="btn btn-primary" (click)="setOpen()">{{open ? 'Close' : 'Open'}}</button>
     <div class="row">
-        <div class="form col">
-            <user-form 
-                [user]="userSelected"
-                (newUserEventEmitter)="addUser($event)"
-            />
-        </div>
+        @if (open) {
+            <div class="form col">
+                <user-form 
+                    [user]="userSelected"
+                    (newUserEventEmitter)="addUser($event)"
+                />
+            </div>            
+        }
         <div class="col">
             <user 
                 [users]="users" 

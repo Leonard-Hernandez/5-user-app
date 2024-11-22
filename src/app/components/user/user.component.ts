@@ -16,10 +16,7 @@ export class UserComponent {
   @Output() onSelectedUserEventEmitter = new EventEmitter<User>();
 
   onRemoveUser(id: number):void {
-    const confirmRemove = confirm("Estas seguro de eliminar el usuario?")
-    if (confirmRemove){
-      this.idUserEventEmitter.emit(id);
-    }
+    this.idUserEventEmitter.emit(id);    
   }
 
   onSelectUser(user: User):void {
