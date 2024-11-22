@@ -34,6 +34,6 @@ export class UserService {
   constructor() { }
 
   findAll(): Observable<User[]> {
-    return of()
+    return of(this.users);
   }
 }

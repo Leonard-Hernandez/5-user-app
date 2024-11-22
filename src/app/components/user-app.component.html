@@ -1,1 +1,21 @@
-<h3>{{title}}</h3>
+<div class="container">
+    <h3>{{title}}</h3>
+
+    <div class="row">
+        <div class="form col">
+            <user-form 
+                [user]="userSelected"
+                (newUserEventEmitter)="addUser($event)"
+            />
+        </div>
+        <div class="col">
+            <user 
+                [users]="users" 
+                (idUserEventEmitter)="RemoveUser($event)"
+                (onSelectedUserEventEmitter)="setSelectUser($event)"
+                />
+        </div>
+    </div>
+
+</div>
+
