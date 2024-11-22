@@ -15,6 +15,8 @@ export class UserFormComponent {
 
   @Output() newUserEventEmitter = new EventEmitter<User>();
 
+  @Output() openEventEmitter = new EventEmitter<boolean>();
+
   constructor() {
     this.user = new User();
   }
@@ -31,6 +33,10 @@ export class UserFormComponent {
     this.user = new User();
     userForm.reset();
     userForm.resetForm();
+  }
+
+  onOpen():void {
+    this.openEventEmitter.emit();
   }
 
 }
