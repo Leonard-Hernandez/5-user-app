@@ -1,81 +1,77 @@
 import { Component, OnInit } from '@angular/core';
 import { User } from '../models/user';
 import { UserService } from '../services/user.service';
-import { UserComponent } from "./user/user.component";
-import { UserFormComponent } from './user-form/user-form.component';
 import Swal from 'sweetalert2';
+import { RouterOutlet } from '@angular/router';
+import { NavbarComponent } from './navbar/navbar.component';
+import { SharingDataService } from '../services/sharing-data.service';
 
 @Component({
   selector: 'user-app',
   standalone: true,
-  imports: [UserComponent, UserFormComponent],
-  templateUrl: './user-app.component.html'
+  imports: [RouterOutlet, NavbarComponent],
+  templateUrl: './user-app.component.html',
 })
-export class UserAppComponent implements OnInit{
-
-  title: string = 'listado de usuarios!'
-
+export class UserAppComponent implements OnInit {
   users: User[] = [];
 
   userSelected: User = new User();
 
-  open: boolean = false;
-
-  constructor(private service: UserService){
-
-  }
+  constructor(
+    private service: UserService,
+    private sharingData: SharingDataService
+  ) {}
 
   ngOnInit(): void {
-    this.service.findAll().subscribe(users => this.users=users);
-    
+    this.service.findAll().subscribe((users) => (this.users = users));
+    this.addUser();
+    this.RemoveUser();
   }
 
-  addUser(user: User):void {
-    if(user.id > 0){
-      this.users = this.users.map( u => (u.id === user.id) ? {...user} : u);
-    }else{
-      this.users = [...this.users, user];      
-    }
-    Swal.fire({
-      title: "Save",
-      text: "User saved!",
-      icon: "success"
-    });
-    this.userSelected = new User();
-    if(this.open){
-      this.setOpen();
-    }
-  }
-
-  RemoveUser(id: number): void {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.users = this.users.filter(user => user.id !== id);
-        Swal.fire({
-          title: "Deleted!",
-          text: "Your user has been deleted.",
-          icon: "success"
-        });
+  addUser(): void {
+    this.sharingData.newUserEventEmitter.subscribe(user => {
+      if (user.id > 0) {
+        this.users = this.users.map((u) => (u.id === user.id ? { ...user } : u));
+      } else {
+        this.users = [...this.users, user];
       }
-    });
+      Swal.fire({
+        title: 'Save',
+        text: 'User saved!',
+        icon: 'success',
+      });
+      this.userSelected = new User();
+    })
   }
 
-  setSelectUser(userRow: User):void {
-    this.userSelected = {... userRow};
-    if(!this.open){
-      this.setOpen();
-    }
+  RemoveUser(): void {
+    this.sharingData.idUserEventEmitter.subscribe(id => {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.users = this.users.filter((user) => user.id !== id);
+          Swal.fire({
+            title: 'Deleted!',
+            text: 'Your user has been deleted.',
+            icon: 'success',
+          });
+        }
+      });
+    })
   }
 
-  setOpen():void {
-    this.open = !this.open;
+  setSelectUser(): void {
+    this.sharingData.onSelectedUserEventEmitter.subscribe(
+      user =>{
+        this.userSelected = { ...user };
+      }
+    )
   }
 }
