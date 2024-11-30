@@ -8,8 +8,6 @@ import { HttpClient } from '@angular/common/http';
 })
 export class UserService {
 
-  private users: User[] = []
-
   private url = 'http://localhost:8080/api/users';
 
   constructor(
@@ -25,10 +23,16 @@ export class UserService {
   }
 
   create(user: User): Observable<User> {
+    console.log(user)
     return this.http.post<User>(this.url, user);
   }
 
   update(user: User): Observable<User> {
     return this.http.put<User>(`${this.url}/${user.id}`, user);
   }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.url}/${id}`);
+  }
+
 }

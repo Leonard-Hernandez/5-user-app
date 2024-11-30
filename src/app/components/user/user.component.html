@@ -4,6 +4,7 @@
     <table class="table table-hover table-striped">
         <thead>
             <tr>
+                <th>#</th>
                 <th>name</th>
                 <th>last</th>
                 <th>email</th>
@@ -15,6 +16,7 @@
         <tbody>
             @for (user of users; track $index) {
                 <tr>
+                    <td>{{user.id}}</td>
                     <td>{{user.name}}</td>
                     <td>{{user.lastname}}</td>
                     <td>{{user.email}}</td>

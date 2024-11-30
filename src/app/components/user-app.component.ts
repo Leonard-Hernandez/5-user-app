@@ -13,7 +13,6 @@ import { SharingDataService } from '../services/sharing-data.service';
   templateUrl: './user-app.component.html',
 })
 export class UserAppComponent implements OnInit {
-  
   users: User[] = [];
 
   constructor(
@@ -29,49 +28,38 @@ export class UserAppComponent implements OnInit {
     this.findUserById();
   }
 
-  findUserById(){
-    this.sharingData.findUserById.subscribe(id =>{
-
-      const user = this.users.find(user => user.id == id);
+  findUserById() {
+    this.sharingData.findUserById.subscribe((id) => {
+      const user = this.users.find((user) => user.id == id);
 
       this.sharingData.selectUserEventEmitter.emit(user);
-      
-    })
-
+    });
   }
 
   addUser(): void {
-    this.sharingData.newUserEventEmitter.subscribe(user => {
-
-      console.log(user + "desde addUser");
-
+    this.sharingData.newUserEventEmitter.subscribe((user) => {
       if (user.id > 0) {
-
-        this.service.update(user).subscribe(userUpdated => {
-          this.users = this.users.map(u => (u.id === userUpdated.id ? { ...userUpdated } : u));
+        this.service.update(user).subscribe((userUpdated) => {
+          this.users = this.users.map((u) =>
+            u.id === userUpdated.id ? { ...userUpdated } : u
+          );
         });
-
       } else {
-
-        this.service.create(user).subscribe(userCreated => {
-
-          this.users = [... this.users, {...userCreated}];
-          
-        })
+        this.service.create(user).subscribe((userCreated) => {
+          this.users = [...this.users, { ...userCreated }];
+        });
       }
-
-      console.log(this.users);
-      this.router.navigate(['/users'], {state: {users: this.users}});
+      this.router.navigate(['/users']);
       Swal.fire({
         title: 'Save',
         text: 'User saved!',
         icon: 'success',
       });
-    })
+    });
   }
 
   RemoveUser(): void {
-    this.sharingData.idUserEventEmitter.subscribe(id => {
+    this.sharingData.idUserEventEmitter.subscribe((id) => {
       Swal.fire({
         title: 'Are you sure?',
         text: "You won't be able to revert this!",
@@ -82,10 +70,14 @@ export class UserAppComponent implements OnInit {
         confirmButtonText: 'Yes, delete it!',
       }).then((result) => {
         if (result.isConfirmed) {
-          this.users = this.users.filter(user => user.id != id);
-          this.router.navigate(['/users/create'], { skipLocationChange: true }).then(() => {
-            this.router.navigate(['/users'], { state: { users: this.users } });
+          this.service.delete(id).subscribe(() => {
+            this.router
+              .navigate(['/users/create'], { skipLocationChange: true })
+              .then(() => {
+                this.router.navigate(['/users']);
+              });
           });
+
           Swal.fire({
             title: 'Deleted!',
             text: 'Your user has been deleted.',
@@ -93,6 +85,6 @@ export class UserAppComponent implements OnInit {
           });
         }
       });
-    })
+    });
   }
 }
