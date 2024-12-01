@@ -39,27 +39,46 @@ export class UserAppComponent implements OnInit {
   addUser(): void {
     this.sharingData.newUserEventEmitter.subscribe((user) => {
       if (user.id > 0) {
-        this.service.update(user).subscribe((userUpdated) => {
-          this.users = this.users.map((u) =>
-            u.id === userUpdated.id ? { ...userUpdated } : u
-          );
-          this.router.navigate(['/users'], {
-            state: { users: this.users },
-          });
+        this.service.update(user).subscribe({
+          next: (userUpdated) => {
+            this.users = this.users.map((u) =>
+              u.id === userUpdated.id ? { ...userUpdated } : u
+            );
+            this.router.navigate(['/users'], { state: { users: this.users } });
+
+            Swal.fire({
+              title: 'Save',
+              text: 'User saved!',
+              icon: 'success',
+            });
+          },
+          error: (err) => {
+            console.log(err);
+            if ((err.status = 400)) {
+              this.sharingData.errorsUserFormEventEmmiter.emit(err);
+            }
+          },
         });
       } else {
-        this.service.create(user).subscribe((userCreated) => {
-          this.users = [...this.users, { ...userCreated }];
-          this.router.navigate(['/users'], {
-            state: { users: this.users },
-          });
+        this.service.create(user).subscribe({
+          next: (userCreated) => {
+            this.users = [...this.users, { ...userCreated }];
+            this.router.navigate(['/users'], { state: { users: this.users } });
+
+            Swal.fire({
+              title: 'Save',
+              text: 'User saved!',
+              icon: 'success',
+            });
+          },
+          error: (err) => {
+            console.log(err);
+            if (err.status == 400) {
+              this.sharingData.errorsUserFormEventEmmiter.emit(err);
+            }
+          },
         });
       }
-      Swal.fire({
-        title: 'Save',
-        text: 'User saved!',
-        icon: 'success',
-      });
     });
   }
 

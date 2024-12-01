@@ -14,6 +14,7 @@ import { UserService } from '../../services/user.service';
 export class UserFormComponent implements OnInit {
 
   user: User;
+  errors: any = {};
 
   constructor(
     private route: ActivatedRoute,
@@ -28,6 +29,8 @@ export class UserFormComponent implements OnInit {
     //   (user) => (this.user = user)
     // );
 
+    this.sharingData.errorsUserFormEventEmmiter.subscribe(errors => this.errors = errors.error)
+
     this.route.paramMap.subscribe((params) => {
       const id: number = +(params.get('id') || 0);
       if (id > 0) {
@@ -38,12 +41,8 @@ export class UserFormComponent implements OnInit {
   }
 
   onSubmit(userForm: NgForm): void {
-    if (userForm.valid) {
-      this.sharingData.newUserEventEmitter.emit(this.user);
-      console.log(this.user);
-    }
-    userForm.reset();
-    userForm.resetForm();
+    this.sharingData.newUserEventEmitter.emit(this.user);
+    console.log(this.user);
   }
 
   onClear(userForm: NgForm): void {
