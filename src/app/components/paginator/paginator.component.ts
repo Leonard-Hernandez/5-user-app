@@ -1,17 +1,15 @@
 import { Component, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { User } from '../../models/user';
 
 @Component({
-  selector: 'navbar',
+  selector: 'paginator',
   standalone: true,
   imports: [RouterModule],
-  templateUrl: './navbar.component.html'
+  templateUrl: './paginator.component.html'
 })
-export class NavbarComponent {
+export class PaginatorComponent {
 
-  @Input() users: User[] = [];
-
+  @Input() url: string = '';
   @Input() paginator: any = {};
 
 }
