@@ -5,6 +5,8 @@ import Swal from 'sweetalert2';
 import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './navbar/navbar.component';
 import { SharingDataService } from '../services/sharing-data.service';
+import { AuthService } from '../services/auth.service';
+import { Token } from '@angular/compiler';
 
 @Component({
   selector: 'user-app',
@@ -21,7 +23,7 @@ export class UserAppComponent implements OnInit {
     private service: UserService,
     private sharingData: SharingDataService,
     private router: Router,
-    private route: ActivatedRoute
+    private authServive: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -39,7 +41,27 @@ export class UserAppComponent implements OnInit {
   }
 
   handlerLogin(): void {
-    this.sharingData.handlerLoginEventEmitter.subscribe(({username, password}) => console.log(username, password));
+    this.sharingData.handlerLoginEventEmitter.subscribe(({username, password}) =>{
+      this.authServive.loginUser({username, password}).subscribe({
+        next: response => {
+          const token = response.token;
+          console.log(token);
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          console.log(payload);
+        },
+        error: error => {
+          if(error.status == 401) {
+            Swal.fire({
+              title: 'Error when login',
+              text: error.error.message,
+              icon: 'error'
+            });
+          } else {
+            throw error;
+          }
+        }
+      })
+    });
   }
 
   findUserById() {
