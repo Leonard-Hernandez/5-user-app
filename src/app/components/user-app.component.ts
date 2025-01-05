@@ -46,8 +46,18 @@ export class UserAppComponent implements OnInit {
         next: response => {
           const token = response.token;
           console.log(token);
-          const payload = JSON.parse(atob(token.split('.')[1]));
-          console.log(payload);
+          const payload = this.authServive.getPayload(token);
+
+          const user = {username: payload.sub};
+          const login = {
+            user,
+            isAuth: true,
+            isAdmin: payload.isAdmin
+          }
+          this.authServive.user = login;
+          this.authServive.token = token;
+
+          this.router.navigate(['/users']);
         },
         error: error => {
           if(error.status == 401) {
