@@ -28,7 +28,6 @@ export class AuthService {
   set user(user: any) {
     this._user = user;
     sessionStorage.setItem('login', JSON.stringify(user));
-
   }
 
   get user() {
@@ -62,6 +61,14 @@ export class AuthService {
       return JSON.parse(atob(token.split('.')[1]));
     }
     return null;
+  }
+
+  isAdmin(): boolean {
+    return this.user.isAdmin;
+  }
+
+  authenticated(): boolean {
+    return this.user.isAuth;
   }
 
 }
