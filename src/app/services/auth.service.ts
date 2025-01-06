@@ -71,4 +71,16 @@ export class AuthService {
     return this.user.isAuth;
   }
 
+  logout() {
+    this._token = undefined;
+    this._user = {
+      isAuth: false,
+      isAdmin: false,
+      user: undefined
+    };
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('login');
+
+  }
+
 }

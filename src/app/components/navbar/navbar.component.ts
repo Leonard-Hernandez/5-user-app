@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { User } from '../../models/user';
 import { AuthService } from '../../services/auth.service';
 
@@ -15,7 +15,10 @@ export class NavbarComponent {
 
   @Input() paginator: any = {};
 
-  constructor(private authService: AuthService) { }
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) { }
 
   get login(){
     return this.authService.user;
@@ -23,5 +26,10 @@ export class NavbarComponent {
 
   get admin(): boolean{
     return this.authService.isAdmin();
+  }
+
+  handlerLogout():void{
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }
