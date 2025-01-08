@@ -2,13 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { User } from '../models/user';
 import { UserService } from '../services/user.service';
 import Swal from 'sweetalert2';
-import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './navbar/navbar.component';
 import { SharingDataService } from '../services/sharing-data.service';
 import { AuthService } from '../services/auth.service';
-import { Token } from '@angular/compiler';
 import { Store } from '@ngrx/store';
-import { add, find, findAll, remove, setPaginator, update } from '../store/user.actions';
+import { add, find, findAll, remove, setPaginator, update } from '../store/users.actions';
 
 @Component({
   selector: 'user-app',

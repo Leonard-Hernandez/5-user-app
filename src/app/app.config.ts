@@ -5,15 +5,16 @@ import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { tokenInterceptor } from './interceptors/token.interceptor';
 import { provideStore } from '@ngrx/store';
-import { userReducer } from './store/user.reducer';
+import { userReducer } from './store/users.reducer';
+import { provideEffects } from '@ngrx/effects';
+import { UserEffects } from './store/users.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(withInterceptors([tokenInterceptor])),
-    provideStore(
-      {users: userReducer}
-    )
+    provideStore({ users: userReducer }),
+    provideEffects(UserEffects)
 ]
 };
