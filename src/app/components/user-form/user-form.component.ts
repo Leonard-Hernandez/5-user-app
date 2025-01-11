@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { User } from '../../models/user';
-import { SharingDataService } from '../../services/sharing-data.service';
 import { ActivatedRoute } from '@angular/router';
-import { UserService } from '../../services/user.service';
+import { Store } from '@ngrx/store';
+import { add, find, resetUser, update, updateSuccess } from '../../store/users.actions';
 
 @Component({
   selector: 'user-form',
@@ -12,37 +12,37 @@ import { UserService } from '../../services/user.service';
   templateUrl: './user-form.component.html',
 })
 export class UserFormComponent implements OnInit {
-
   user: User;
   errors: any = {};
 
   constructor(
+    private store: Store<{ users: any }>,
     private route: ActivatedRoute,
-    private sharingData: SharingDataService,
-    private userService: UserService
   ) {
     this.user = new User();
+
+    this.store.select('users').subscribe((state) => {
+      this.errors = state.errors;
+      this.user = { ...state.user };
+    });
   }
 
   ngOnInit(): void {
-    // this.sharingData.selectUserEventEmitter.subscribe(
-    //   (user) => (this.user = user)
-    // );
-
-    this.sharingData.errorsUserFormEventEmmiter.subscribe(errors => this.errors = errors.error)
-
     this.route.paramMap.subscribe((params) => {
       const id: number = +(params.get('id') || 0);
       if (id > 0) {
-        //this.sharingData.findUserById.emit(id);
-        this.userService.findById(id).subscribe((user) => (this.user = user));
+        this.store.dispatch(find({ id }));
       }
     });
   }
 
   onSubmit(userForm: NgForm): void {
-    this.sharingData.newUserEventEmitter.emit(this.user);
-    console.log(this.user);
+    if (this.user.id > 0) {
+      this.store.dispatch(updateSuccess({ userUpdated: this.user }));
+    } else {
+      this.store.dispatch(add({ userNew: this.user }));
+    }
+    this.store.dispatch(resetUser());
   }
 
   onClear(userForm: NgForm): void {
