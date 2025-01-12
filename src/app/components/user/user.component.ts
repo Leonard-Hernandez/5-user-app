@@ -6,7 +6,8 @@ import { SharingDataService } from '../../services/sharing-data.service';
 import { PaginatorComponent } from '../paginator/paginator.component';
 import { AuthService } from '../../services/auth.service';
 import { Store } from '@ngrx/store';
-import { load } from '../../store/users.actions';
+import { load, remove } from '../../store/users.actions';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'user',
@@ -36,11 +37,25 @@ export class UserComponent implements OnInit {
     });
   }
   ngOnInit(): void {
-    this.route.paramMap.subscribe((params) => {this.store.dispatch(load({ page : +(params.get('page') || 0) }));});
+    this.route.paramMap.subscribe((params) => {
+      this.store.dispatch(load({ page: +(params.get('page') || 0) }));
+    });
   }
 
   onRemoveUser(id: number): void {
-    this.sharingDataService.idUserEventEmitter.emit(id);
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.store.dispatch(remove({ id }));
+      }
+    });
   }
 
   onSelectUser(user: User): void {

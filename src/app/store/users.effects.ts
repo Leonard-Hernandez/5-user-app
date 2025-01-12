@@ -6,6 +6,8 @@ import {
   addSuccess,
   findAllPageable,
   load,
+  remove,
+  removeSuccess,
   setErrors,
   update,
   updateSuccess,
@@ -23,16 +25,19 @@ export class UserEffects {
 
   addSuccess$: any;
 
-  updateUser$ : any;
+  updateUser$: any;
 
-  updateSuccess$ : any;
+  updateSuccess$: any;
+
+  removeUser$: any;
+
+  removeSuccessUser$: any;
 
   constructor(
-    private actions$: Actions, 
+    private actions$: Actions,
     private userService: UserService,
     private router: Router
-  )
-    {
+  ) {
     this.loadUsers$ = createEffect(() =>
       this.actions$.pipe(
         ofType(load),
@@ -64,21 +69,22 @@ export class UserEffects {
       )
     );
 
-    this.addSuccess$ = createEffect( () => 
-      this.actions$.pipe(
-        ofType(addSuccess),
-        tap(() => {
-          this.router.navigate(['/users']);
+    this.addSuccess$ = createEffect(
+      () =>
+        this.actions$.pipe(
+          ofType(addSuccess),
+          tap(() => {
+            this.router.navigate(['/users']);
 
-          Swal.fire({
-            title: 'Save',
-            text: 'User saved!',
-            icon: 'success',
-          });
-        })
-      )
-      , {dispatch: false}
-    )
+            Swal.fire({
+              title: 'Save',
+              text: 'User saved!',
+              icon: 'success',
+            });
+          })
+        ),
+      { dispatch: false }
+    );
 
     this.updateUser$ = createEffect(() =>
       this.actions$.pipe(
@@ -94,21 +100,49 @@ export class UserEffects {
       )
     );
 
-    this.updateSuccess$ = createEffect( () => 
+    this.updateSuccess$ = createEffect(
+      () =>
+        this.actions$.pipe(
+          ofType(updateSuccess),
+          tap(() => {
+            this.router.navigate(['/users']);
+
+            Swal.fire({
+              title: 'Save',
+              text: 'User saved!',
+              icon: 'success',
+            });
+          })
+        ),
+      { dispatch: false }
+    );
+
+    this.removeUser$ = createEffect(() =>
       this.actions$.pipe(
-        ofType(updateSuccess),
+        ofType(remove),
+        exhaustMap((action) =>
+          this.userService.delete(action.id).pipe(
+            map((id) => removeSuccess({ id })),
+            catchError((err) =>
+              err.status == 400 ? of(setErrors({ errors: err.error })) : EMPTY
+            )
+          )
+        )
+      )
+    );
+
+    this.removeSuccessUser$ = createEffect(() =>
+      this.actions$.pipe(
+        ofType(removeSuccess),
         tap(() => {
           this.router.navigate(['/users']);
-
           Swal.fire({
-            title: 'Save',
-            text: 'User saved!',
+            title: 'Deleted!',
+            text: 'Your user has been deleted.',
             icon: 'success',
           });
         })
       )
-      , {dispatch: false}
-    )
-
+    );
   }
 }
