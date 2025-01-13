@@ -12,7 +12,7 @@ import {
   update,
   updateSuccess,
 } from './users.actions';
-import { catchError, EMPTY, exhaustMap, map, of, tap } from 'rxjs';
+import { catchError, exhaustMap, map, of, tap } from 'rxjs';
 import { User } from '../models/user';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
@@ -49,7 +49,7 @@ export class UserEffects {
 
               return findAllPageable({ users, paginator });
             }),
-            catchError((err) => EMPTY)
+            catchError((err) => of(err))
           )
         )
       )
@@ -62,7 +62,7 @@ export class UserEffects {
           this.userService.create(action.userNew).pipe(
             map((userNew) => addSuccess({ userNew })),
             catchError((err) =>
-              err.status == 400 ? of(setErrors({ errors: err.error })) : EMPTY
+              err.status == 400 ? of(setErrors({ userForm: action.userNew, errors: err.error })) : of(err)
             )
           )
         )
@@ -93,7 +93,7 @@ export class UserEffects {
           this.userService.update(action.userUpdated).pipe(
             map((userUpdated) => updateSuccess({ userUpdated })),
             catchError((err) =>
-              err.status == 400 ? of(setErrors({ errors: err.error })) : EMPTY
+              err.status == 400 ? of(setErrors({ userForm: action.userUpdated, errors: err.error })) : of(err)
             )
           )
         )
@@ -122,10 +122,7 @@ export class UserEffects {
         ofType(remove),
         exhaustMap((action) =>
           this.userService.delete(action.id).pipe(
-            map((id) => removeSuccess({ id })),
-            catchError((err) =>
-              err.status == 400 ? of(setErrors({ errors: err.error })) : EMPTY
-            )
+            map((id) => removeSuccess({ id: id })),
           )
         )
       )
@@ -135,6 +132,7 @@ export class UserEffects {
       this.actions$.pipe(
         ofType(removeSuccess),
         tap(() => {
+          console.log('removeSuccess');
           this.router.navigate(['/users']);
           Swal.fire({
             title: 'Deleted!',
@@ -142,7 +140,8 @@ export class UserEffects {
             icon: 'success',
           });
         })
-      )
+      ),
+      { dispatch: false }
     );
   }
 }
