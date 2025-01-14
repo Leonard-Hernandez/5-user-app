@@ -5,7 +5,6 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { SharingDataService } from '../services/sharing-data.service';
 import { AuthService } from '../services/auth.service';
 
-
 @Component({
   selector: 'user-app',
   standalone: true,
@@ -30,14 +29,12 @@ export class UserAppComponent implements OnInit {
           next: (response) => {
             const token = response.token;
             const payload = this.authServive.getPayload(token);
-
-            const user = { username: payload.sub };
-            const login = {
-              user,
+            
+            this.authServive.user = {
+              user:{ username: payload.sub },
               isAuth: true,
               isAdmin: payload.isAdmin,
             };
-            this.authServive.user = login;
             this.authServive.token = token;
 
             this.router.navigate(['/users']);

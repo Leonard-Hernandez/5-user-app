@@ -1,6 +1,6 @@
 import { createReducer, on } from "@ngrx/store";
-import { User } from "../models/user";
 import { addSuccess, find, findAll, findAllPageable, remove, removeSuccess, resetUser, setErrors, setPaginator, update, updateSuccess } from "./users.actions";
+import { User } from "../../models/user";
 
 const users: User[] = [];
 const user: User = new User();
