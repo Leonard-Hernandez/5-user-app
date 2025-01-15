@@ -1,9 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import Swal from 'sweetalert2';
-import { Router, RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './navbar/navbar.component';
-import { SharingDataService } from '../services/sharing-data.service';
-import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'user-app',
@@ -11,47 +8,6 @@ import { AuthService } from '../services/auth.service';
   imports: [RouterOutlet, NavbarComponent],
   templateUrl: './user-app.component.html',
 })
-export class UserAppComponent implements OnInit {
-  constructor(
-    private sharingData: SharingDataService,
-    private router: Router,
-    private authServive: AuthService,
-  ) {}
+export class UserAppComponent {
 
-  ngOnInit(): void {
-    this.handlerLogin();
-  }
-
-  handlerLogin(): void {
-    this.sharingData.handlerLoginEventEmitter.subscribe(
-      ({ username, password }) => {
-        this.authServive.loginUser({ username, password }).subscribe({
-          next: (response) => {
-            const token = response.token;
-            const payload = this.authServive.getPayload(token);
-            
-            this.authServive.user = {
-              user:{ username: payload.sub },
-              isAuth: true,
-              isAdmin: payload.isAdmin,
-            };
-            this.authServive.token = token;
-
-            this.router.navigate(['/users']);
-          },
-          error: (error) => {
-            if (error.status == 401) {
-              Swal.fire({
-                title: 'Error when login',
-                text: error.error.message,
-                icon: 'error',
-              });
-            } else {
-              throw error;
-            }
-          },
-        });
-      }
-    );
-  }
 }

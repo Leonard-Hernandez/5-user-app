@@ -7,8 +7,10 @@ export const initialLogin = {
     user: undefined
 }
 
+const initialState = JSON.parse(sessionStorage.getItem('login') || JSON.stringify(initialLogin));
+
 export const authReducer = createReducer(
-    initialLogin,
+    initialState,
     on(login, (state, { login}) => (
         {
             isAuth: true,
