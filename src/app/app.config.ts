@@ -10,6 +10,7 @@ import { userReducer } from './store/users/users.reducer';
 import { UserEffects } from './store/users/users.effects';
 import { authReducer } from './store/auth/auth.reducer';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
+import { AuthEffects } from './store/auth/auth.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,7 +21,7 @@ export const appConfig: ApplicationConfig = {
         users: userReducer,
         auth: authReducer
     }),
-    provideEffects(UserEffects),
+    provideEffects(UserEffects, AuthEffects),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() })
 ]
 };

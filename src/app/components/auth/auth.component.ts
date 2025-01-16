@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { User } from '../../models/user';
 import Swal from 'sweetalert2';
-import { SharingDataService } from '../../services/sharing-data.service';
-import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { login } from '../../store/auth/auth.actions';
 
 @Component({
   selector: 'app-auth',
@@ -14,12 +14,13 @@ import { Router } from '@angular/router';
 })
 export class AuthComponent {
 
-  user: User;
+  user: User = new User();
 
-  constructor(private authService: AuthService,
-    protected router: Router
+  constructor(
+    private store: Store<{auth: any}>,
+    private router: Router
   ) {
-    this.user = new User();
+    
   }
 
   onSubmit(){
@@ -30,32 +31,7 @@ export class AuthComponent {
         'error'
       );
     } else {
-      this.authService.loginUser({ username: this.user.username, password: this.user.password }).subscribe({
-        next: (response) => {
-          const token = response.token;
-          const payload = this.authService.getPayload(token);
-          
-          this.authService.user = {
-            user:{ username: payload.sub },
-            isAuth: true,
-            isAdmin: payload.isAdmin,
-          };
-          this.authService.token = token;
-
-          this.router.navigate(['/users']);
-        },
-        error: (error) => {
-          if (error.status == 401) {
-            Swal.fire({
-              title: 'Error when login',
-              text: error.error.message,
-              icon: 'error',
-            });
-          } else {
-            throw error;
-          }
-        },
-      });
+      this.store.dispatch(login({username: this.user.username, password: this.user.password}));
     }
   }
 
