@@ -103,6 +103,15 @@
                 } -->
           </div>
         }
+        <div class="form-check">
+          <input 
+            type="checkbox" 
+            class="form-check-input my-2"
+            name="admin"
+            [(ngModel)]="user.admin"
+          >
+          <label for="admin" class="form-check-label">admin</label>
+        </div>
         <div>
           <button type="submit" class="btn btn-primary m-2">
             {{ user.id > 0 ? "Update" : "Save" }}
